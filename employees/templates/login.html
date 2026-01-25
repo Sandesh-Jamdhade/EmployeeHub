@@ -1,0 +1,13 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'employees/style.css' %}">
+
+<h1 style="text-align: center;">Employee Hub</h1>
+<div class="container">
+<h2>Login</h2>
+
+<form method="post">
+{% csrf_token %}
+{{ form.as_p }}
+<button>Login</button>
+</form>
+</div>

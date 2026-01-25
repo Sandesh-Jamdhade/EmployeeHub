@@ -1,0 +1,30 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'employees/style.css' %}">
+
+<div class="container">
+
+<h2>Add Employee</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<label>Name</label>
+<input name="name" required>
+
+<label>Email</label>
+<input name="email" required>
+
+<label>Department</label>
+<input name="department" required>
+
+<label>Salary</label>
+<input name="salary" required>
+
+<button>Save</button>
+
+</form>
+
+<br>
+<a href="/">Back</a>
+
+</div>

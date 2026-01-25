@@ -1,0 +1,30 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'employees/style.css' %}">
+
+<div class="container">
+
+<h2>Edit Employee</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<label>Name</label>
+<input name="name" value="{{emp.name}}" required>
+
+<label>Email</label>
+<input name="email" value="{{emp.email}}" required>
+
+<label>Department</label>
+<input name="department" value="{{emp.department}}" required>
+
+<label>Salary</label>
+<input name="salary" value="{{emp.salary}}" required>
+
+<button>Update</button>
+
+</form>
+
+<br>
+<a href="/">Back</a>
+
+</div>
