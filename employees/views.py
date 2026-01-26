@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 from .models import Employee
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 @login_required
 def dashboard(request):
-    employees = Employee.objects.all()
-    return render(request, 'dashboard.html', {'employees': employees})
+     if not request.user.is_superuser:
+        return redirect('/accounts/profile/')
+     employees = Employee.objects.all()
+     return render(request, 'dashboard.html', {'employees': employees})
 
 @login_required
 def add_employee(request):
@@ -46,3 +49,27 @@ def delete_employee(request, id):
     emp = Employee.objects.get(id=id)
     emp.delete()
     return redirect('/')
+
+def register(request):
+    if request.method=="POST":
+        username=request.POST.get('username')
+        email=request.POST.get('email')
+        password=request.POST.get('password')
+
+        User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
+
+        return redirect('/login')
+    return render(request,'register.html')
+
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def profile(request):
+    return render(request, 'profile.html')
+
+
+
