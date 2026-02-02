@@ -1,0 +1,19 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'style.css' %}">
+
+<div class="container">
+
+<h2>Welcome to your profile</h2>
+
+<p>Hello {{ request.user.username }}</p>
+<br><br>
+<form action="/logout/" method="post">
+{% csrf_token %}
+<button>Logout</button>
+</form>
+{% if request.user.is_superuser %}
+<a href="/">Dashboard</a>
+{% endif %}
+
+
+</div>
