@@ -23,8 +23,8 @@
 <td>{{ e.department }}</td>
 <td>{{ e.salary }}</td>
 <td class="actions">
-<a href="/edit/{{ e.id }}">Edit</a>
-<a href="/delete/{{ e.id }}">Delete</a>
+<a href="{% url 'edit_employee' e.id %}">Edit</a>
+<a href="{% url 'delete_employee' e.id %}">Delete</a>
 </td>
 </tr>
 {% endfor %}
@@ -34,7 +34,7 @@
 <br>
 <form action="/logout/" method="post">
 {% csrf_token %}
-<button>Logout</button>
+<a href="{% url 'logout' %}">Logout</a>
 </form>
 
 
