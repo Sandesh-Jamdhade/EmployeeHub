@@ -1,75 +1,73 @@
 from django.shortcuts import render, redirect
-from .models import Employee
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+import requests
 
-@login_required
+BACKEND = "http://127.0.0.1:8000"
+
+def login_view(request):
+    error = None
+
+    if request.method == "POST":
+        resp = requests.post(f"{BACKEND}/login/", data=request.POST)
+
+        if resp.status_code == 200:
+            data = resp.json()
+
+            if data.get("is_admin"):
+                return redirect("dashboard")
+            else:
+                return redirect("profile")
+
+        error = "Invalid username or password"
+
+    return render(request, "login.html", {"error": error})
+
+
+def register_view(request):
+    error = None
+
+    if request.method == "POST":
+        resp = requests.post(f"{BACKEND}/register/", data=request.POST)
+
+        if resp.status_code == 200:
+            return redirect("login")
+
+        error = "User already exists"
+
+    return render(request, "register.html", {"error": error})
+
+
 def dashboard(request):
-     if not request.user.is_superuser:
-        return redirect('/accounts/profile/')
-     employees = Employee.objects.all()
-     return render(request, 'dashboard.html', {'employees': employees})
+    response = requests.get(f"{BACKEND}/employees/")
+    employees = response.json()
+    return render(request, "dashboard.html", {"employees": employees})
 
-@login_required
+
 def add_employee(request):
     if request.method == "POST":
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        department = request.POST.get('department')
-        salary = request.POST.get('salary')
+        requests.post(f"{BACKEND}/employees/create/", data=request.POST)
+        return redirect("dashboard")
+    return render(request, "add_employee.html")
 
-        Employee.objects.create(
-            name=name,
-            email=email,
-            department=department,
-            salary=salary
-        )
 
-        return redirect('/')
-
-    return render(request, 'add_employee.html')
-
-@login_required
 def edit_employee(request, id):
-    emp = Employee.objects.get(id=id)
-
     if request.method == "POST":
-        emp.name = request.POST.get('name')
-        emp.email = request.POST.get('email')
-        emp.department = request.POST.get('department')
-        emp.salary = request.POST.get('salary')
-        emp.save()
+        requests.put(f"{BACKEND}/employees/update/{id}/", data=request.POST)
+        return redirect("dashboard")
+    response = requests.get(f"{BACKEND}/employees/{id}/")
+    employee = response.json()
 
-        return redirect('/')
+    return render(request, "edit_employee.html", {"employee": employee})
 
-    return render(request, 'edit_employee.html', {'emp': emp})
 
-@login_required
+
 def delete_employee(request, id):
-    emp = Employee.objects.get(id=id)
-    emp.delete()
-    return redirect('/')
+    requests.delete(f"{BACKEND}/employees/delete/{id}/")
+    return redirect("dashboard")
 
-def register(request):
-    if request.method=="POST":
-        username=request.POST.get('username')
-        email=request.POST.get('email')
-        password=request.POST.get('password')
 
-        User.objects.create_user(
-            username=username,
-            email=email,
-            password=password
-        )
-
-        return redirect('/login')
-    return render(request,'register.html')
-
-from django.contrib.auth.decorators import login_required
-
-@login_required
 def profile(request):
-    return render(request, 'profile.html')
+    return render(request, "profile.html")
 
 
-
+def logout_view(request):
+    return redirect("login")
